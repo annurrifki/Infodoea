@@ -3,89 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pemilihan Ketua Ekskul - E-Voting</title>
+    <title>E-Voting Ketua Ekskul</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
 
-    <!-- Header -->
     <header class="bg-slate-800/50 backdrop-blur border-b border-slate-700 py-6 text-center">
-        <h1 class="text-2xl md:text-3xl font-bold tracking-wider text-emerald-400">E-VOTING KETUA EKSKUL</h1>
-        <p class="text-slate-400 text-sm mt-1">Pilih pemimpin terbaik untuk masa depan organisasi kita!</p>
+        <h1 class="text-2xl md:text-3xl font-bold text-emerald-400">E-VOTING KETUA EKSKUL</h1>
+        <p class="text-slate-400 text-sm mt-1" id="user-welcome">Silakan Login atau Register untuk Memilih</p>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 max-w-4xl flex-grow">
+    <main class="container mx-auto px-4 py-8 max-w-md flex-grow">
         
-        <!-- Form Verifikasi Pemilih (Opsional) -->
-        <div id="auth-section" class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl mb-8 max-w-md mx-auto">
-            <h2 class="text-lg font-semibold mb-4 text-center">Masukkan Token / NIS</h2>
+        <!-- FORM LOGIN -->
+        <div id="login-section" class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
+            <h2 class="text-xl font-bold mb-4 text-center text-white">Login Siswa</h2>
             <div class="space-y-4">
-                <input type="text" id="voter-id" placeholder="Contoh: 12345 atau Nama Lengkap" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
-                <button onclick="startVote()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition duration-200">Mulai Voting</button>
+                <div>
+                    <label class="text-xs text-slate-400">Username</label>
+                    <input type="text" id="login-username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Password</label>
+                    <input type="password" id="login-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition">Login</button>
+                <p class="text-center text-xs text-slate-400 mt-4">Belum punya akun? <button onclick="showRegister()" class="text-emerald-400 underline">Daftar di sini</button></p>
             </div>
         </div>
 
-        <!-- Kandidat Section (Hidden Sifatnya Sampai Login/Mulai) -->
-        <div id="voting-section" class="hidden">
-            <div class="text-center mb-8">
-                <span class="bg-emerald-500/10 text-emerald-400 text-xs px-3 py-1 rounded-full border border-emerald-500/20">Silakan pilih 1 kandidat di bawah ini</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Kandidat 1 -->
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:border-emerald-500/50 transition">
-                    <div>
-                        <div class="h-40 bg-slate-700 rounded-xl mb-4 flex items-center justify-center text-slate-500 font-medium">[ Foto Kandidat 1 ]</div>
-                        <h3 class="text-xl font-bold text-white">01. Rayhan Pratama</h3>
-                        <p class="text-xs text-emerald-400 font-semibold mt-1">Visi: Kreatif, Inovatif, & Solutif</p>
-                        <p class="text-slate-400 text-sm mt-3">"Membawa ekskul kita lebih aktif berkolaborasi dan berprestasi di tingkat regional."</p>
-                    </div>
-                    <button onclick="castVote('Rayhan Pratama')" class="mt-6 w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-2.5 rounded-xl transition duration-200">Pilih Kandidat Ini</button>
+        <!-- FORM REGISTER -->
+        <div id="register-section" class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl hidden">
+            <h2 class="text-xl font-bold mb-4 text-center text-white">Daftar Akun Baru</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400">Username</label>
+                    <input type="text" id="reg-username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
                 </div>
+                <div>
+                    <label class="text-xs text-slate-400">Nama Lengkap</label>
+                    <input type="text" id="reg-nama" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Password</label>
+                    <input type="password" id="reg-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                </div>
+                <button onclick="handleRegister()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition">Daftar</button>
+                <p class="text-center text-xs text-slate-400 mt-4">Sudah punya akun? <button onclick="showLogin()" class="text-emerald-400 underline">Login di sini</button></p>
+            </div>
+        </div>
 
-                <!-- Kandidat 2 -->
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:border-emerald-500/50 transition">
-                    <div>
-                        <div class="h-40 bg-slate-700 rounded-xl mb-4 flex items-center justify-center text-slate-500 font-medium">[ Foto Kandidat 2 ]</div>
-                        <h3 class="text-xl font-bold text-white">02. Salsabila Zahra</h3>
-                        <p class="text-xs text-emerald-400 font-semibold mt-1">Visi: Disiplin, Kekeluargaan, Produktif</p>
-                        <p class="text-slate-400 text-sm mt-3">"Mempererat kebersamaan anggota dan mengoptimalkan program kerja yang berdampak."</p>
-                    </div>
-                    <button onclick="castVote('Salsabila Zahra')" class="mt-6 w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-2.5 rounded-xl transition duration-200">Pilih Kandidat Ini</button>
+        <!-- HALAMAN VOTING -->
+        <div id="voting-section" class="hidden space-y-6">
+            <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl text-center">
+                <h3 class="text-lg font-bold text-white mb-2">Pilih Kandidat Ketua Ekskul</h3>
+                <div class="space-y-3 mt-4">
+                    <button onclick="castVote('Rayhan Pratama')" class="w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-3 rounded-xl transition">01. Rayhan Pratama</button>
+                    <button onclick="castVote('Salsabila Zahra')" class="w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-3 rounded-xl transition">02. Salsabila Zahra</button>
                 </div>
             </div>
         </div>
 
-        <!-- Sukses/Hasil Screen -->
-        <div id="success-section" class="hidden text-center bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-xl max-w-md mx-auto">
+        <!-- HALAMAN SUKSES -->
+        <div id="success-section" class="hidden text-center bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-xl">
             <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
-            <h2 class="text-xl font-bold text-white">Terima Kasih!</h2>
-            <p class="text-slate-400 text-sm mt-2">Suara kamu berhasil direkam dan dikirimkan.</p>
+            <h2 class="text-xl font-bold text-white">Suara Berhasil Direkam!</h2>
+            <p class="text-slate-400 text-sm mt-2">Terima kasih sudah berpartisipasi dalam pemilihan ini.</p>
         </div>
 
     </main>
 
-    <!-- Footer -->
     <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-800">
-        &copy; 2026 Pengurus Ekskul. Powered by Vercel.
+        &copy; 2026 E-Voting Ekskul. Powered by Vercel.
     </footer>
 
-    <!-- Script Sederhana -->
     <script>
-        function startVote() {
-            const voterId = document.getElementById('voter-id').value;
-            if(!voterId.trim()) {
-                alert('Mohon isi identitas / token terlebih dahulu!');
+        function showRegister() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('register-section').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('register-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+        }
+
+        function handleRegister() {
+            const username = document.getElementById('reg-username').value.trim();
+            const nama = document.getElementById('reg-nama').value.trim();
+            const password = document.getElementById('reg-password').value;
+
+            if(!username || !nama || !password) {
+                alert('Semua kolom harus diisi!');
                 return;
             }
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('voting-section').classList.remove('hidden');
+
+            // Cek apakah username sudah ada di localStorage
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            if(users.some(u => u.username === username)) {
+                alert('Username sudah terdaftar, pakai yang lain ya!');
+                return;
+            }
+
+            // Simpan user baru
+            users.push({ username, nama, password });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert('Registrasi berhasil! Silakan login.');
+            showLogin();
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if(!username || !password) {
+                alert('Username dan Password harus diisi!');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            const foundUser = users.find(u => u.username === username && u.password === password);
+
+            if(foundUser) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('voting-section').classList.remove('hidden');
+                document.getElementById('user-welcome').innerText = `Selamat datang, ${foundUser.nama}!`;
+            } else {
+                alert('Username atau Password salah!');
+            }
         }
 
         function castVote(candidateName) {
-            if(confirm(`Kamu yakin ingin memilih ${candidateName}? Pilihan tidak dapat diubah.`)) {
-                // Kamu bisa ganti bagian ini untuk kirim data ke Google Sheets/Database nanti
+            if(confirm(`Yakin memilih ${candidateName}? Pilihan tidak dapat diubah.`)) {
                 document.getElementById('voting-section').classList.add('hidden');
                 document.getElementById('success-section').classList.remove('hidden');
             }
