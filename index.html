@@ -366,6 +366,10 @@
         }
 
         function showDashboard(role, username) {
+            // Simpan sesi ke localStorage biar tidak hilang saat refresh
+            localStorage.setItem('evoting_role', role);
+            localStorage.setItem('evoting_user', username);
+
             document.getElementById('page-login').classList.add('hidden');
             document.getElementById('page-register').classList.add('hidden');
             document.getElementById('nav-user-info').classList.remove('hidden');
@@ -381,6 +385,10 @@
         }
 
         function logout() {
+            // Hapus sesi dari localStorage saat logout
+            localStorage.removeItem('evoting_role');
+            localStorage.removeItem('evoting_user');
+
             document.getElementById('nav-user-info').classList.add('hidden');
             switchPage('login');
         }
@@ -601,6 +609,14 @@
             document.getElementById('vote-1').addEventListener('change', updateDropdownOptions);
             document.getElementById('vote-2').addEventListener('change', updateDropdownOptions);
             document.getElementById('vote-3').addEventListener('change', updateDropdownOptions);
+
+            // Cek apakah user sudah pernah login sebelumnya saat halaman di-refresh
+            const savedRole = localStorage.getItem('evoting_role');
+            const savedUser = localStorage.getItem('evoting_user');
+
+            if (savedRole && savedUser) {
+                showDashboard(savedRole, savedUser);
+            }
         });
 
         // 1. Pindah ke halaman konfirmasi
@@ -639,7 +655,6 @@
                 let result = await response.json();
                 
                 if(result.status === "success") {
-                    // Pindah ke halaman sukses / terima kasih
                     document.getElementById('page-confirm-dash').classList.add('hidden');
                     document.getElementById('page-success-dash').classList.remove('hidden');
                 } else {
