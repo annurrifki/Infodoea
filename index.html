@@ -338,7 +338,7 @@
             }
         }
 
-        // 1. LOADING SAAT LOGIN
+        // 1. LOADING SAAT LOGIN & RESET TOMBOL
         async function handleLogin(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
@@ -351,6 +351,9 @@
             const password = document.getElementById('login-password').value;
 
             if(username === 'admin' && password === 'admin123') {
+                // Kembalikan tombol login seperti semula sebelum masuk dashboard
+                btn.disabled = false;
+                btn.innerHTML = originalText;
                 showDashboard('admin', 'Administrator');
                 return;
             }
@@ -363,6 +366,9 @@
                 let result = await response.json();
                 
                 if(result.status === "success") {
+                    // Kembalikan tombol login seperti semula sebelum masuk dashboard
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                     showDashboard(result.role.toLowerCase(), result.nama);
                 } else {
                     alert(result.message);
@@ -394,9 +400,21 @@
             }
         }
 
+        // 2. LOGOUT / KELUAR: BERSIHKAN SESI, INPUTAN, & TOMBOL LOGIN
         function logout() {
             localStorage.removeItem('evoting_role');
             localStorage.removeItem('evoting_user');
+
+            // Kosongkan input username & password di halaman login
+            document.getElementById('login-username').value = "";
+            document.getElementById('login-password').value = "";
+
+            // Pastikan tombol login kembali bersih (tidak ada spinner / disabled)
+            const loginBtn = document.querySelector('#page-login button[type="submit"]');
+            if(loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = "Masuk";
+            }
 
             document.getElementById('nav-user-info').classList.add('hidden');
             switchPage('login');
@@ -646,7 +664,7 @@
             document.getElementById('page-user-dash').classList.remove('hidden');
         }
 
-        // 2. LOADING SAAT KONFIRMASI & KIRIM SUARA
+        // 3. LOADING SAAT KONFIRMASI & KIRIM SUARA
         async function submitFinalVote() {
             const btn = document.querySelector('#page-confirm-dash button.bg-emerald-600');
             const originalText = btn.innerHTML;
@@ -713,7 +731,7 @@
             }
         }
 
-        // 3. LOADING SAAT TAMBAH KANDIDAT
+        // 4. LOADING SAAT TAMBAH KANDIDAT
         async function handleAddKandidat(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
