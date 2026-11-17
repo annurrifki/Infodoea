@@ -338,8 +338,15 @@
             }
         }
 
+        // 1. LOADING SAAT LOGIN
         async function handleLogin(e) {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 mx-auto text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
 
@@ -359,14 +366,17 @@
                     showDashboard(result.role.toLowerCase(), result.nama);
                 } else {
                     alert(result.message);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                 }
             } catch (err) {
                 alert("Gagal terhubung ke server database.");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
 
         function showDashboard(role, username) {
-            // Simpan sesi ke localStorage biar tidak hilang saat refresh
             localStorage.setItem('evoting_role', role);
             localStorage.setItem('evoting_user', username);
 
@@ -385,7 +395,6 @@
         }
 
         function logout() {
-            // Hapus sesi dari localStorage saat logout
             localStorage.removeItem('evoting_role');
             localStorage.removeItem('evoting_user');
 
@@ -610,7 +619,6 @@
             document.getElementById('vote-2').addEventListener('change', updateDropdownOptions);
             document.getElementById('vote-3').addEventListener('change', updateDropdownOptions);
 
-            // Cek apakah user sudah pernah login sebelumnya saat halaman di-refresh
             const savedRole = localStorage.getItem('evoting_role');
             const savedUser = localStorage.getItem('evoting_user');
 
@@ -619,7 +627,6 @@
             }
         });
 
-        // 1. Pindah ke halaman konfirmasi
         function goToConfirmation(e) {
             e.preventDefault();
             const p1 = document.getElementById('vote-1').value;
@@ -634,14 +641,19 @@
             document.getElementById('page-confirm-dash').classList.remove('hidden');
         }
 
-        // Kembali ke halaman voting jika ingin ubah pilihan
         function backToVoting() {
             document.getElementById('page-confirm-dash').classList.add('hidden');
             document.getElementById('page-user-dash').classList.remove('hidden');
         }
 
-        // 2. Kirim final suara setelah konfirmasi diklik
+        // 2. LOADING SAAT KONFIRMASI & KIRIM SUARA
         async function submitFinalVote() {
+            const btn = document.querySelector('#page-confirm-dash button.bg-emerald-600');
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 mx-auto text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
             const pilihan1 = document.getElementById('vote-1').value;
             const pilihan2 = document.getElementById('vote-2').value;
             const pilihan3 = document.getElementById('vote-3').value;
@@ -659,10 +671,14 @@
                     document.getElementById('page-success-dash').classList.remove('hidden');
                 } else {
                     alert(result.message);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                     switchPage('user-dash');
                 }
             } catch (err) {
                 alert("Gagal mengirim suara ke database.");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
 
@@ -697,8 +713,15 @@
             }
         }
 
+        // 3. LOADING SAAT TAMBAH KANDIDAT
         async function handleAddKandidat(e) {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 mx-auto text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
             const namaKandidat = document.getElementById('input-nama-kandidat').value;
 
             try {
@@ -717,6 +740,9 @@
                 }
             } catch (err) {
                 alert("Gagal terhubung ke database.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
     </script>
