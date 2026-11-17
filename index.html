@@ -3,220 +3,705 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Voting Ketua Ekskul</title>
+    <title>Aplikasi Voting Pemilihan Ketua</title>
+    <!-- Tailwind CSS untuk UI yang modern & bersih -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <header class="bg-slate-800/50 backdrop-blur border-b border-slate-700 py-6 text-center">
-        <h1 class="text-2xl md:text-3xl font-bold text-emerald-400">E-VOTING KETUA EKSKUL</h1>
-        <p class="text-slate-400 text-sm mt-1" id="user-welcome">Silakan Login atau Register untuk Memilih</p>
-    </header>
+    <!-- KONFIGURASI API GOOGLE APPS SCRIPT -->
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwh0AAiCjFUYFu3x7d7Y2RicwBHuiNP2Jq7CptorpH05KOpcU6zsZnezeAZO5TNx6nO/exec";
+    </script>
 
-    <main class="container mx-auto px-4 py-8 max-w-md flex-grow">
-        
-        <!-- FORM LOGIN -->
-        <div id="login-section" class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
-            <h2 class="text-xl font-bold mb-4 text-center text-white">Login Siswa</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-xs text-slate-400">Username</label>
-                    <input type="text" id="login-username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="text-xs text-slate-400">Password</label>
-                    <div class="relative mt-1">
-                        <input type="password" id="login-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 pr-10">
-                        <button type="button" onclick="togglePassword('login-password', 'eye-login')" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs" id="eye-login">👁️</button>
-                    </div>
-                </div>
-                <button onclick="handleLogin()" id="btn-login" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition">Login</button>
-                <p class="text-center text-xs text-slate-400 mt-4">Belum punya akun? <button onclick="showRegister()" class="text-emerald-400 underline">Daftar di sini</button></p>
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-100">V</div>
+                <span class="font-bold text-lg tracking-tight">E-Voting Infodoea</span>
+            </div>
+            <div id="nav-user-info" class="hidden flex items-center space-x-4">
+                <span id="display-username" class="text-sm font-medium text-slate-600"></span>
+                <button onclick="logout()" class="text-sm bg-rose-50 text-rose-600 hover:bg-rose-100 px-3 py-1.5 rounded-lg font-medium transition">Logout</button>
             </div>
         </div>
+    </header>
 
-        <!-- FORM REGISTER -->
-        <div id="register-section" class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl hidden">
-            <h2 class="text-xl font-bold mb-4 text-center text-white">Daftar Akun Baru</h2>
-            <div class="space-y-4">
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-10 flex-grow flex items-center justify-center">
+
+        <!-- 1. HALAMAN LOGIN -->
+        <section id="page-login" class="w-full max-w-md bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold tracking-tight">Selamat Datang 👋</h1>
+                <p class="text-sm text-slate-500 mt-1">Silakan masuk menggunakan akun terdaftar</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="text-xs text-slate-400">Nama Lengkap</label>
-                    <input type="text" id="reg-nama" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Username</label>
+                    <input type="text" id="login-username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm transition">
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400">Angkatan</label>
-                    <select id="reg-angkatan" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500 text-slate-200">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Password</label>
+                    <div class="relative">
+                        <input type="password" id="login-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm transition pr-10">
+                        <button type="button" onclick="togglePassword('login-password', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-lg shadow-indigo-200 transition">Masuk</button>
+            </form>
+            <div class="text-center mt-6">
+                <p class="text-sm text-slate-500">Belum punya akun? <button onclick="switchPage('register')" class="text-indigo-600 font-semibold hover:underline">Register di sini</button></p>
+            </div>
+        </section>
+
+        <!-- 2. HALAMAN REGISTER -->
+        <section id="page-register" class="w-full max-w-md bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100 hidden">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-bold tracking-tight">Buat Akun Baru</h1>
+                <p class="text-sm text-slate-500 mt-1">Role otomatis terdaftar sebagai User</p>
+            </div>
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Lengkap</label>
+                    <input type="text" id="reg-nama" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Angkatan</label>
+                    <select id="reg-angkatan" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm bg-white">
+                        <option value="">-- Pilih Angkatan --</option>
                         <option value="2'27">2'27</option>
                         <option value="2'28">2'28</option>
                         <option value="2'29">2'29</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400">Username</label>
-                    <input type="text" id="reg-username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Username</label>
+                    <input type="text" id="reg-username" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm">
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400">Password</label>
-                    <div class="relative mt-1">
-                        <input type="password" id="reg-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 pr-10">
-                        <button type="button" onclick="togglePassword('reg-password', 'eye-reg')" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs" id="eye-reg">👁️</button>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="reg-password" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm pr-10">
+                        <button type="button" onclick="togglePassword('reg-password', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">👁️</button>
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400">Konfirmasi Password</label>
-                    <div class="relative mt-1">
-                        <input type="password" id="reg-confirm-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 pr-10">
-                        <button type="button" onclick="togglePassword('reg-confirm-password', 'eye-reg-confirm')" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs" id="eye-reg-confirm">👁️</button>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Konfirmasi Password</label>
+                    <div class="relative">
+                        <input type="password" id="reg-confirm-password" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm pr-10">
+                        <button type="button" onclick="togglePassword('reg-confirm-password', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">👁️</button>
                     </div>
                 </div>
-                <button onclick="handleRegister()" id="btn-reg" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition">Daftar</button>
-                <p class="text-center text-xs text-slate-400 mt-4">Sudah punya akun? <button onclick="showLogin()" class="text-emerald-400 underline">Login di sini</button></p>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-lg shadow-indigo-200 transition">Daftar Sekarang</button>
+            </form>
+            <div class="text-center mt-4">
+                <p class="text-sm text-slate-500">Sudah punya akun? <button onclick="switchPage('login')" class="text-indigo-600 font-semibold hover:underline">Login</button></p>
             </div>
-        </div>
+        </section>
 
-        <!-- HALAMAN VOTING -->
-        <div id="voting-section" class="hidden space-y-6">
-            <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl text-center">
-                <h3 class="text-lg font-bold text-white mb-2">Pilih Kandidat Ketua Ekskul</h3>
-                <div class="space-y-3 mt-4">
-                    <button onclick="castVote('Rayhan Pratama')" class="w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-3 rounded-xl transition">01. Rayhan Pratama</button>
-                    <button onclick="castVote('Salsabila Zahra')" class="w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-3 rounded-xl transition">02. Salsabila Zahra</button>
+        <!-- 3. HALAMAN USER DASHBOARD (VOTING) -->
+        <section id="page-user-dash" class="w-full max-w-xl bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100 hidden">
+            <div class="mb-6">
+                <h1 class="text-xl font-bold">Bilik Suara Pemilihan Ketua</h1>
+                <p class="text-sm text-slate-500">Pilih 3 kandidat pilihanmu secara berurutan (Pilihan 1, 2, & 3).</p>
+            </div>
+            <form onsubmit="goToConfirmation(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Pilihan 1 (Utama)</label>
+                    <select id="vote-1" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                        <option value="">-- Pilih Kandidat --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Pilihan 2</label>
+                    <select id="vote-2" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                        <option value="">-- Pilih Kandidat --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Pilihan 3</label>
+                    <select id="vote-3" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                        <option value="">-- Pilih Kandidat --</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-lg shadow-indigo-200 transition">Kirim Pilihan Suara</button>
+            </form>
+        </section>
+
+        <!-- 3.5. HALAMAN KONFIRMASI PILIHAN -->
+        <section id="page-confirm-dash" class="w-full max-w-xl bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100 hidden">
+            <div class="mb-6 text-center">
+                <h1 class="text-xl font-bold">Konfirmasi Pilihan Anda</h1>
+                <p class="text-sm text-slate-500 mt-1">Periksa kembali pilihan kandidat ketua sebelum dikirim.</p>
+            </div>
+            <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6 text-sm">
+                <div class="flex justify-between py-1.5 border-b border-slate-200/60">
+                    <span class="font-semibold text-slate-500">Pilihan 1 (Utama):</span>
+                    <span id="conf-v1" class="font-bold text-indigo-600"></span>
+                </div>
+                <div class="flex justify-between py-1.5 border-b border-slate-200/60">
+                    <span class="font-semibold text-slate-500">Pilihan 2:</span>
+                    <span id="conf-v2" class="font-bold text-indigo-600"></span>
+                </div>
+                <div class="flex justify-between py-1.5">
+                    <span class="font-semibold text-slate-500">Pilihan 3:</span>
+                    <span id="conf-v3" class="font-bold text-indigo-600"></span>
                 </div>
             </div>
-        </div>
+            <div class="flex space-x-3">
+                <button onclick="backToVoting()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2.5 rounded-xl text-sm transition">Ubah Pilihan</button>
+                <button onclick="submitFinalVote()" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-lg shadow-emerald-200 transition">Konfirmasi & Kirim Suara</button>
+            </div>
+        </section>
 
-        <!-- HALAMAN SUKSES -->
-        <div id="success-section" class="hidden text-center bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-xl">
-            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
-            <h2 class="text-xl font-bold text-white">Suara Berhasil Direkam!</h2>
-            <p class="text-slate-400 text-sm mt-2">Terima kasih sudah berpartisipasi dalam pemilihan ini.</p>
-        </div>
+        <!-- 3.6. HALAMAN SUKSES / TERIMA KASIH -->
+        <section id="page-success-dash" class="w-full max-w-md bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100 text-center hidden">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 shadow-inner">🎉</div>
+            <h1 class="text-xl font-bold mb-2">Suara Berhasil Dikirim!</h1>
+            <p class="text-sm text-slate-600 leading-relaxed mb-6 font-medium">Terima kasih udah milih, ditunggu hasilnya yaaaa!</p>
+            <button onclick="logout()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition">Keluar / Selesai</button>
+        </section>
+
+        <!-- 4. HALAMAN ADMIN DASHBOARD -->
+        <section id="page-admin-dash" class="w-full max-w-4xl bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100 hidden">
+            <div class="flex items-center justify-between mb-6 border-b pb-4">
+                <div>
+                    <h1 class="text-xl font-bold">Dashboard Admin</h1>
+                    <p class="text-sm text-slate-500">Kelola pengguna, tambah kandidat, dan pantau rekapitulasi.</p>
+                </div>
+            </div>
+            
+            <!-- Tab Menu Admin -->
+            <div class="flex space-x-2 border-b border-slate-100 pb-4 mb-6 overflow-x-auto">
+                <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-50 text-indigo-600 transition">Manajemen User</button>
+                <button onclick="switchAdminTab('kandidat')" id="tab-btn-kandidat" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">Pencalonan Ketua</button>
+                <button onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">Rekap & Ranking</button>
+            </div>
+
+            <!-- Konten Tab 1: Manajemen User -->
+            <div id="admin-tab-users" class="space-y-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Daftar Pengguna Terdaftar</h3>
+                <div class="border rounded-xl overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 border-b text-slate-500">
+                            <tr>
+                                <th class="p-3">Username</th>
+                                <th class="p-3">Nama</th>
+                                <th class="p-3">Angkatan</th>
+                                <th class="p-3">Password</th>
+                                <th class="p-3">Role</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-users-body">
+                            <tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data dari Google Sheets...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Konten Tab 2: Pencalonan Ketua -->
+            <div id="admin-tab-kandidat" class="space-y-4 hidden">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Tambah & Kelola Kandidat</h3>
+                <form onsubmit="handleAddKandidat(event)" class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Kandidat / Paslon</label>
+                        <input type="text" id="input-nama-kandidat" required placeholder="Contoh: Kandidat D / No. Urut 4" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                    </div>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition">Tambah Kandidat</button>
+                </form>
+
+                <div class="mt-6">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-2">Daftar Kandidat Terdaftar</h3>
+                    <div class="border rounded-xl overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b text-slate-500">
+                                <tr><th class="p-3">No</th><th class="p-3">Nama Kandidat</th></tr>
+                            </thead>
+                            <tbody id="table-kandidat-body">
+                                <tr><td colspan="2" class="p-4 text-center text-slate-400">Memuat data kandidat...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Konten Tab 3: Rekap & Ranking -->
+            <div id="admin-tab-rekap" class="space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Hasil Rekapitulasi & Ranking Suara</h3>
+                    <button onclick="loadRekapData()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-xs font-semibold rounded-lg transition">🔄 Refresh Rekap</button>
+                </div>
+                <div class="border rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b text-slate-500">
+                            <tr>
+                                <th class="p-3">Ranking</th>
+                                <th class="p-3">Nama Kandidat</th>
+                                <th class="p-3 text-center">Pilihan 1</th>
+                                <th class="p-3 text-center">Pilihan 2</th>
+                                <th class="p-3 text-center">Pilihan 3</th>
+                                <th class="p-3 text-center font-bold">Total Suara</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-rekap-body">
+                            <tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat hasil rekapitulasi...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
     </main>
 
-    <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-800">
-        &copy; 2026 E-Voting Ekskul. Powered by Vercel & Google Sheets.
+    <!-- MODAL EDIT USER -->
+    <div id="modal-edit-user" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold">Edit Pengguna</h3>
+            <form onsubmit="handleUpdateUser(event)" class="space-y-3">
+                <input type="hidden" id="edit-old-username">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Username</label>
+                    <input type="text" id="edit-username" disabled class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-100 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Lengkap</label>
+                    <input type="text" id="edit-nama" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Angkatan</label>
+                    <select id="edit-angkatan" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                        <option value="2'27">2'27</option>
+                        <option value="2'28">2'28</option>
+                        <option value="2'29">2'29</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Password Baru (Opsional)</label>
+                    <input type="password" id="edit-password" placeholder="Kosongkan jika tidak diubah" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+                </div>
+                <div class="flex space-x-2 pt-2">
+                    <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl text-sm transition">Simpan Perubahan</button>
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-sm transition">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-6 text-xs text-slate-400">
+        &copy; 2026 E-Voting System &bull; Powered by Google Sheets API
     </footer>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // GANTI LINK DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
-        const scriptURL = 'https://script.google.com/macros/s/AKfycby_-OWskPc_hfn-Lb9DplqEnVy-4dhWjnU5isN0NHEgR17zl9PdAZ0h1CJ4tW3Gv8Vg/exec';
+        let masterKandidatList = [];
+        let allUsersData = [];
 
-        function showRegister() {
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('register-section').classList.remove('hidden');
+        function switchPage(pageId) {
+            document.getElementById('page-login').classList.add('hidden');
+            document.getElementById('page-register').classList.add('hidden');
+            document.getElementById('page-user-dash').classList.add('hidden');
+            document.getElementById('page-confirm-dash').classList.add('hidden');
+            document.getElementById('page-success-dash').classList.add('hidden');
+            document.getElementById('page-admin-dash').classList.add('hidden');
+            
+            document.getElementById('page-' + pageId).classList.remove('hidden');
         }
 
-        function showLogin() {
-            document.getElementById('register-section').classList.add('hidden');
-            document.getElementById('login-section').classList.remove('hidden');
-        }
-
-        // Fungsi untuk toggle lihat password (buka/tutup mata)
-        function togglePassword(fieldId, btnId) {
-            const inputField = document.getElementById(fieldId);
-            const btn = document.getElementById(btnId);
-            if (inputField.type === "password") {
-                inputField.type = "text";
-                btn.innerText = "🙈";
+        function togglePassword(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "🙈";
             } else {
-                inputField.type = "password";
-                btn.innerText = "👁️";
+                input.type = "password";
+                btn.textContent = "👁️";
             }
         }
 
-        async function handleRegister() {
-            const nama = document.getElementById('reg-nama').value.trim();
+        function toggleTablePassword(index, btn) {
+            const span = document.getElementById(`pwd-span-${index}`);
+            const isHidden = span.textContent === "••••••••";
+            if (isHidden) {
+                span.textContent = span.getAttribute("data-password");
+                btn.textContent = "🙈";
+            } else {
+                span.textContent = "••••••••";
+                btn.textContent = "👁️";
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if(username === 'admin' && password === 'admin123') {
+                showDashboard('admin', 'Administrator');
+                return;
+            }
+
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "login", username, password })
+                });
+                let result = await response.json();
+                
+                if(result.status === "success") {
+                    showDashboard(result.role.toLowerCase(), result.nama);
+                } else {
+                    alert(result.message);
+                }
+            } catch (err) {
+                alert("Gagal terhubung ke server database.");
+            }
+        }
+
+        function showDashboard(role, username) {
+            document.getElementById('page-login').classList.add('hidden');
+            document.getElementById('page-register').classList.add('hidden');
+            document.getElementById('nav-user-info').classList.remove('hidden');
+            document.getElementById('display-username').innerText = username;
+
+            if(role === 'admin') {
+                document.getElementById('page-admin-dash').classList.remove('hidden');
+                loadAdminData();
+            } else {
+                document.getElementById('page-user-dash').classList.remove('hidden');
+                loadUserKandidatDropdown();
+            }
+        }
+
+        function logout() {
+            document.getElementById('nav-user-info').classList.add('hidden');
+            switchPage('login');
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-users').classList.add('hidden');
+            document.getElementById('admin-tab-kandidat').classList.add('hidden');
+            document.getElementById('admin-tab-rekap').classList.add('hidden');
+
+            document.getElementById('tab-btn-users').className = "px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition";
+            document.getElementById('tab-btn-kandidat').className = "px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition";
+            document.getElementById('tab-btn-rekap').className = "px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition";
+
+            if(tab === 'users') {
+                document.getElementById('admin-tab-users').classList.remove('hidden');
+                document.getElementById('tab-btn-users').className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-50 text-indigo-600 transition";
+            } else if(tab === 'kandidat') {
+                document.getElementById('admin-tab-kandidat').classList.remove('hidden');
+                document.getElementById('tab-btn-kandidat').className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-50 text-indigo-600 transition";
+            } else if(tab === 'rekap') {
+                document.getElementById('admin-tab-rekap').classList.remove('hidden');
+                document.getElementById('tab-btn-rekap').className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-50 text-indigo-600 transition";
+                loadRekapData();
+            }
+        }
+
+        async function loadAdminData() {
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "getAdminData" })
+                });
+                let result = await response.json();
+
+                if(result.status === "success") {
+                    allUsersData = result.users;
+                    let userHtml = "";
+                    if(allUsersData.length === 0) {
+                        userHtml = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada user terdaftar.</td></tr>`;
+                    } else {
+                        allUsersData.forEach((u, index) => {
+                            let username = u[0];
+                            let password = u[1];
+                            let nama = u[2];
+                            let angkatan = u[3] || '-';
+                            let role = u[4];
+
+                            userHtml += `<tr class="border-b">
+                                <td class="p-3 font-medium">${username}</td>
+                                <td class="p-3">${nama}</td>
+                                <td class="p-3">${angkatan}</td>
+                                <td class="p-3">
+                                    <div class="flex items-center space-x-2">
+                                        <span id="pwd-span-${index}" data-password="${password}">••••••••</span>
+                                        <button onclick="toggleTablePassword(${index}, this)" class="text-xs text-slate-400 hover:text-slate-600">👁️</button>
+                                    </div>
+                                </td>
+                                <td class="p-3"><span class="px-2 py-1 bg-slate-100 rounded-md text-xs font-medium">${role}</span></td>
+                                <td class="p-3 text-center space-x-1">
+                                    <button onclick="openEditModal('${username}')" class="px-2.5 py-1 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded-lg text-xs font-medium transition">Edit</button>
+                                    <button onclick="handleDeleteUser('${username}')" class="px-2.5 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-medium transition">Hapus</button>
+                                </td>
+                            </tr>`;
+                        });
+                    }
+                    document.getElementById('table-users-body').innerHTML = userHtml;
+
+                    let kandidatHtml = "";
+                    if(result.kandidat.length === 0) {
+                        kandidatHtml = `<tr><td colspan="2" class="p-4 text-center text-slate-400">Belum ada kandidat ditambahkan.</td></tr>`;
+                    } else {
+                        result.kandidat.forEach((k, index) => {
+                            kandidatHtml += `<tr class="border-b"><td class="p-3 font-medium">${index + 1}</td><td class="p-3">${k[0]}</td></tr>`;
+                        });
+                    }
+                    document.getElementById('table-kandidat-body').innerHTML = kandidatHtml;
+                }
+            } catch (err) {
+                console.error("Gagal memuat data admin", err);
+            }
+        }
+
+        async function loadRekapData() {
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "getRekapData" })
+                });
+                let result = await response.json();
+
+                if(result.status === "success") {
+                    let rekapHtml = "";
+                    if(result.rekap.length === 0) {
+                        rekapHtml = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data rekap suara.</td></tr>`;
+                    } else {
+                        result.rekap.forEach((r, index) => {
+                            rekapHtml += `<tr class="border-b">
+                                <td class="p-3 font-bold text-indigo-600">#${index + 1}</td>
+                                <td class="p-3 font-semibold">${r.nama}</td>
+                                <td class="p-3 text-center">${r.p1}</td>
+                                <td class="p-3 text-center">${r.p2}</td>
+                                <td class="p-3 text-center">${r.p3}</td>
+                                <td class="p-3 text-center font-bold text-indigo-600 text-base">${r.totalSuara}</td>
+                            </tr>`;
+                        });
+                    }
+                    document.getElementById('table-rekap-body').innerHTML = rekapHtml;
+                }
+            } catch (err) {
+                console.error("Gagal memuat rekap suara", err);
+            }
+        }
+
+        function openEditModal(username) {
+            let user = allUsersData.find(u => u[0] === username);
+            if (!user) return;
+
+            document.getElementById('edit-old-username').value = user[0];
+            document.getElementById('edit-username').value = user[0];
+            document.getElementById('edit-nama').value = user[2];
+            document.getElementById('edit-angkatan').value = user[3] || "2'27";
+            document.getElementById('edit-password').value = "";
+            document.getElementById('modal-edit-user').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('modal-edit-user').classList.add('hidden');
+        }
+
+        async function handleUpdateUser(e) {
+            e.preventDefault();
+            const username = document.getElementById('edit-old-username').value;
+            const nama = document.getElementById('edit-nama').value;
+            const angkatan = document.getElementById('edit-angkatan').value;
+            const password = document.getElementById('edit-password').value;
+
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "updateUser", username, nama, angkatan, password })
+                });
+                let result = await response.json();
+                if(result.status === "success") {
+                    alert("Data user berhasil diperbarui!");
+                    closeEditModal();
+                    loadAdminData();
+                } else {
+                    alert(result.message);
+                }
+            } catch(err) {
+                alert("Gagal mengupdate user.");
+            }
+        }
+
+        async function handleDeleteUser(username) {
+            if(!confirm(`Yakin ingin menghapus user "${username}"?`)) return;
+
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "deleteUser", username })
+                });
+                let result = await response.json();
+                if(result.status === "success") {
+                    alert("User berhasil dihapus!");
+                    loadAdminData();
+                } else {
+                    alert(result.message);
+                }
+            } catch(err) {
+                alert("Gagal menghapus user.");
+            }
+        }
+
+        async function loadUserKandidatDropdown() {
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "getKandidat" })
+                });
+                let result = await response.json();
+
+                if(result.status === "success") {
+                    masterKandidatList = result.data;
+                    updateDropdownOptions();
+                }
+            } catch (err) {
+                console.error("Gagal memuat pilihan kandidat", err);
+            }
+        }
+
+        function updateDropdownOptions() {
+            const v1 = document.getElementById('vote-1').value;
+            const v2 = document.getElementById('vote-2').value;
+            const v3 = document.getElementById('vote-3').value;
+
+            populateSelect('vote-1', [v2, v3]);
+            populateSelect('vote-2', [v1, v3]);
+            populateSelect('vote-3', [v1, v2]);
+        }
+
+        function populateSelect(selectId, excludedValues) {
+            const currentSelect = document.getElementById(selectId);
+            const currentValue = currentSelect.value;
+
+            let options = `<option value="">-- Pilih Kandidat --</option>`;
+            masterKandidatList.forEach(name => {
+                if (!excludedValues.includes(name)) {
+                    options += `<option value="${name}">${name}</option>`;
+                }
+            });
+
+            currentSelect.innerHTML = options;
+            currentSelect.value = currentValue;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('vote-1').addEventListener('change', updateDropdownOptions);
+            document.getElementById('vote-2').addEventListener('change', updateDropdownOptions);
+            document.getElementById('vote-3').addEventListener('change', updateDropdownOptions);
+        });
+
+        // 1. Pindah ke halaman konfirmasi
+        function goToConfirmation(e) {
+            e.preventDefault();
+            const p1 = document.getElementById('vote-1').value;
+            const p2 = document.getElementById('vote-2').value;
+            const p3 = document.getElementById('vote-3').value;
+
+            document.getElementById('conf-v1').innerText = p1;
+            document.getElementById('conf-v2').innerText = p2;
+            document.getElementById('conf-v3').innerText = p3;
+
+            document.getElementById('page-user-dash').classList.add('hidden');
+            document.getElementById('page-confirm-dash').classList.remove('hidden');
+        }
+
+        // Kembali ke halaman voting jika ingin ubah pilihan
+        function backToVoting() {
+            document.getElementById('page-confirm-dash').classList.add('hidden');
+            document.getElementById('page-user-dash').classList.remove('hidden');
+        }
+
+        // 2. Kirim final suara setelah konfirmasi diklik
+        async function submitFinalVote() {
+            const pilihan1 = document.getElementById('vote-1').value;
+            const pilihan2 = document.getElementById('vote-2').value;
+            const pilihan3 = document.getElementById('vote-3').value;
+            const username = document.getElementById('display-username').innerText;
+
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "vote", username, pilihan1, pilihan2, pilihan3 })
+                });
+                let result = await response.json();
+                
+                if(result.status === "success") {
+                    // Pindah ke halaman sukses / terima kasih
+                    document.getElementById('page-confirm-dash').classList.add('hidden');
+                    document.getElementById('page-success-dash').classList.remove('hidden');
+                } else {
+                    alert(result.message);
+                    switchPage('user-dash');
+                }
+            } catch (err) {
+                alert("Gagal mengirim suara ke database.");
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nama = document.getElementById('reg-nama').value;
             const angkatan = document.getElementById('reg-angkatan').value;
-            const username = document.getElementById('reg-username').value.trim();
+            const username = document.getElementById('reg-username').value;
             const password = document.getElementById('reg-password').value;
             const confirmPassword = document.getElementById('reg-confirm-password').value;
 
-            if(!nama || !username || !password || !confirmPassword) {
-                alert('Semua kolom wajib diisi!');
+            if (password !== confirmPassword) {
+                alert("Password dan Konfirmasi Password tidak sama!");
                 return;
             }
-
-            if(password !== confirmPassword) {
-                alert('Konfirmasi password tidak cocok! Silakan cek kembali.');
-                return;
-            }
-
-            const btn = document.getElementById('btn-reg');
-            btn.innerText = 'Memeriksa & Mendaftarkan...';
 
             try {
-                // Cek duplikat username lewat Google Sheets
-                const checkRes = await fetch(`${scriptURL}?action=getUsers`);
-                const checkData = await checkRes.json();
-                
-                if(checkData.users && checkData.users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-                    alert('Username sudah terdaftar! Gunakan username lain.');
-                    btn.innerText = 'Daftar';
-                    return;
-                }
-
-                // Kirim data register baru ke Google Sheets
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: 'register', nama, angkatan, username, password })
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "register", nama, angkatan, username, password })
                 });
-
-                alert('Registrasi berhasil! Silakan login.');
-                showLogin();
-            } catch (error) {
-                // Fallback uji coba lokal jika offline/gagal fetch
-                alert('Registrasi berhasil (Mode Offline)! Silakan login.');
-                showLogin();
-            } finally {
-                btn.innerText = 'Daftar';
+                let result = await response.json();
+                
+                if(result.status === "success") {
+                    alert('Registrasi berhasil! Silakan login.');
+                    switchPage('login');
+                } else {
+                    alert(result.message);
+                }
+            } catch (err) {
+                alert("Gagal terhubung ke database.");
             }
         }
 
-        async function handleLogin() {
-            const username = document.getElementById('login-username').value.trim();
-            const password = document.getElementById('login-password').value;
-
-            if(!username || !password) {
-                alert('Username dan Password harus diisi!');
-                return;
-            }
-
-            const btn = document.getElementById('btn-login');
-            btn.innerText = 'Memeriksa...';
+        async function handleAddKandidat(e) {
+            e.preventDefault();
+            const namaKandidat = document.getElementById('input-nama-kandidat').value;
 
             try {
-                const response = await fetch(`${scriptURL}?action=getUsers`);
-                const data = await response.json();
+                let response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "addKandidat", namaKandidat: namaKandidat })
+                });
+                let result = await response.json();
                 
-                const foundUser = data.users.find(u => u.username === username && u.password === password);
-
-                if(foundUser) {
-                    document.getElementById('login-section').classList.add('hidden');
-                    document.getElementById('voting-section').classList.remove('hidden');
-                    document.getElementById('user-welcome').innerText = `Selamat datang, ${foundUser.nama}!`;
+                if(result.status === "success") {
+                    alert('Kandidat "' + namaKandidat + '" berhasil disimpan!');
+                    document.getElementById('input-nama-kandidat').value = '';
+                    loadAdminData();
                 } else {
-                    alert('Username atau Password salah!');
+                    alert(result.message);
                 }
-            } catch (error) {
-                // Bypass darurat admin
-                if(username === "admin" && password === "winaa0123") {
-                    document.getElementById('login-section').classList.add('hidden');
-                    document.getElementById('voting-section').classList.remove('hidden');
-                    document.getElementById('user-welcome').innerText = `Selamat datang, Admin!`;
-                } else {
-                    alert('Username atau Password salah!');
-                }
-            } finally {
-                btn.innerText = 'Login';
-            }
-        }
-
-        function castVote(candidateName) {
-            if(confirm(`Yakin memilih ${candidateName}? Pilihan tidak dapat diubah.`)) {
-                document.getElementById('voting-section').classList.add('hidden');
-                document.getElementById('success-section').classList.remove('hidden');
+            } catch (err) {
+                alert("Gagal terhubung ke database.");
             }
         }
     </script>
