@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemilihan Ketua Ekskul - E-Voting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-slate-800/50 backdrop-blur border-b border-slate-700 py-6 text-center">
+        <h1 class="text-2xl md:text-3xl font-bold tracking-wider text-emerald-400">E-VOTING KETUA EKSKUL</h1>
+        <p class="text-slate-400 text-sm mt-1">Pilih pemimpin terbaik untuk masa depan organisasi kita!</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl flex-grow">
+        
+        <!-- Form Verifikasi Pemilih (Opsional) -->
+        <div id="auth-section" class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl mb-8 max-w-md mx-auto">
+            <h2 class="text-lg font-semibold mb-4 text-center">Masukkan Token / NIS</h2>
+            <div class="space-y-4">
+                <input type="text" id="voter-id" placeholder="Contoh: 12345 atau Nama Lengkap" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+                <button onclick="startVote()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition duration-200">Mulai Voting</button>
+            </div>
+        </div>
+
+        <!-- Kandidat Section (Hidden Sifatnya Sampai Login/Mulai) -->
+        <div id="voting-section" class="hidden">
+            <div class="text-center mb-8">
+                <span class="bg-emerald-500/10 text-emerald-400 text-xs px-3 py-1 rounded-full border border-emerald-500/20">Silakan pilih 1 kandidat di bawah ini</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Kandidat 1 -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:border-emerald-500/50 transition">
+                    <div>
+                        <div class="h-40 bg-slate-700 rounded-xl mb-4 flex items-center justify-center text-slate-500 font-medium">[ Foto Kandidat 1 ]</div>
+                        <h3 class="text-xl font-bold text-white">01. Rayhan Pratama</h3>
+                        <p class="text-xs text-emerald-400 font-semibold mt-1">Visi: Kreatif, Inovatif, & Solutif</p>
+                        <p class="text-slate-400 text-sm mt-3">"Membawa ekskul kita lebih aktif berkolaborasi dan berprestasi di tingkat regional."</p>
+                    </div>
+                    <button onclick="castVote('Rayhan Pratama')" class="mt-6 w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-2.5 rounded-xl transition duration-200">Pilih Kandidat Ini</button>
+                </div>
+
+                <!-- Kandidat 2 -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:border-emerald-500/50 transition">
+                    <div>
+                        <div class="h-40 bg-slate-700 rounded-xl mb-4 flex items-center justify-center text-slate-500 font-medium">[ Foto Kandidat 2 ]</div>
+                        <h3 class="text-xl font-bold text-white">02. Salsabila Zahra</h3>
+                        <p class="text-xs text-emerald-400 font-semibold mt-1">Visi: Disiplin, Kekeluargaan, Produktif</p>
+                        <p class="text-slate-400 text-sm mt-3">"Mempererat kebersamaan anggota dan mengoptimalkan program kerja yang berdampak."</p>
+                    </div>
+                    <button onclick="castVote('Salsabila Zahra')" class="mt-6 w-full bg-slate-700 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-2.5 rounded-xl transition duration-200">Pilih Kandidat Ini</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sukses/Hasil Screen -->
+        <div id="success-section" class="hidden text-center bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-xl max-w-md mx-auto">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
+            <h2 class="text-xl font-bold text-white">Terima Kasih!</h2>
+            <p class="text-slate-400 text-sm mt-2">Suara kamu berhasil direkam dan dikirimkan.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-800">
+        &copy; 2026 Pengurus Ekskul. Powered by Vercel.
+    </footer>
+
+    <!-- Script Sederhana -->
+    <script>
+        function startVote() {
+            const voterId = document.getElementById('voter-id').value;
+            if(!voterId.trim()) {
+                alert('Mohon isi identitas / token terlebih dahulu!');
+                return;
+            }
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('voting-section').classList.remove('hidden');
+        }
+
+        function castVote(candidateName) {
+            if(confirm(`Kamu yakin ingin memilih ${candidateName}? Pilihan tidak dapat diubah.`)) {
+                // Kamu bisa ganti bagian ini untuk kirim data ke Google Sheets/Database nanti
+                document.getElementById('voting-section').classList.add('hidden');
+                document.getElementById('success-section').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
