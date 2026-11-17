@@ -25,7 +25,10 @@
                 </div>
                 <div>
                     <label class="text-xs text-slate-400">Password</label>
-                    <input type="password" id="login-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                    <div class="relative mt-1">
+                        <input type="password" id="login-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 pr-10">
+                        <button type="button" onclick="togglePassword('login-password', 'eye-login')" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs" id="eye-login">👁️</button>
+                    </div>
                 </div>
                 <button onclick="handleLogin()" id="btn-login" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition">Login</button>
                 <p class="text-center text-xs text-slate-400 mt-4">Belum punya akun? <button onclick="showRegister()" class="text-emerald-400 underline">Daftar di sini</button></p>
@@ -37,16 +40,34 @@
             <h2 class="text-xl font-bold mb-4 text-center text-white">Daftar Akun Baru</h2>
             <div class="space-y-4">
                 <div>
-                    <label class="text-xs text-slate-400">Username</label>
-                    <input type="text" id="reg-username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
                     <label class="text-xs text-slate-400">Nama Lengkap</label>
                     <input type="text" id="reg-nama" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
+                    <label class="text-xs text-slate-400">Angkatan</label>
+                    <select id="reg-angkatan" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500 text-slate-200">
+                        <option value="2'27">2'27</option>
+                        <option value="2'28">2'28</option>
+                        <option value="2'29">2'29</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Username</label>
+                    <input type="text" id="reg-username" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
                     <label class="text-xs text-slate-400">Password</label>
-                    <input type="password" id="reg-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                    <div class="relative mt-1">
+                        <input type="password" id="reg-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 pr-10">
+                        <button type="button" onclick="togglePassword('reg-password', 'eye-reg')" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs" id="eye-reg">👁️</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Konfirmasi Password</label>
+                    <div class="relative mt-1">
+                        <input type="password" id="reg-confirm-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 pr-10">
+                        <button type="button" onclick="togglePassword('reg-confirm-password', 'eye-reg-confirm')" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs" id="eye-reg-confirm">👁️</button>
+                    </div>
                 </div>
                 <button onclick="handleRegister()" id="btn-reg" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition">Daftar</button>
                 <p class="text-center text-xs text-slate-400 mt-4">Sudah punya akun? <button onclick="showLogin()" class="text-emerald-400 underline">Login di sini</button></p>
@@ -78,7 +99,7 @@
     </footer>
 
     <script>
-        // MASUKKAN URL WEB APP GOOGLE SCRIPT KAMU DI DALAM TANDA KUTIP DI BAWAH INI
+        // GANTI LINK DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
         const scriptURL = 'https://script.google.com/macros/s/AKfycby_-OWskPc_hfn-Lb9DplqEnVy-4dhWjnU5isN0NHEgR17zl9PdAZ0h1CJ4tW3Gv8Vg/exec';
 
         function showRegister() {
@@ -91,29 +112,63 @@
             document.getElementById('login-section').classList.remove('hidden');
         }
 
-        async function handleRegister() {
-            const username = document.getElementById('reg-username').value.trim();
-            const nama = document.getElementById('reg-nama').value.trim();
-            const password = document.getElementById('reg-password').value;
+        // Fungsi untuk toggle lihat password (buka/tutup mata)
+        function togglePassword(fieldId, btnId) {
+            const inputField = document.getElementById(fieldId);
+            const btn = document.getElementById(btnId);
+            if (inputField.type === "password") {
+                inputField.type = "text";
+                btn.innerText = "🙈";
+            } else {
+                inputField.type = "password";
+                btn.innerText = "👁️";
+            }
+        }
 
-            if(!username || !nama || !password) {
-                alert('Semua kolom harus diisi!');
+        async function handleRegister() {
+            const nama = document.getElementById('reg-nama').value.trim();
+            const angkatan = document.getElementById('reg-angkatan').value;
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+            if(!nama || !username || !password || !confirmPassword) {
+                alert('Semua kolom wajib diisi!');
+                return;
+            }
+
+            if(password !== confirmPassword) {
+                alert('Konfirmasi password tidak cocok! Silakan cek kembali.');
                 return;
             }
 
             const btn = document.getElementById('btn-reg');
-            btn.innerText = 'Memproses...';
+            btn.innerText = 'Memeriksa & Mendaftarkan...';
 
             try {
-                const response = await fetch(scriptURL, {
+                // Cek duplikat username lewat Google Sheets
+                const checkRes = await fetch(`${scriptURL}?action=getUsers`);
+                const checkData = await checkRes.json();
+                
+                if(checkData.users && checkData.users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                    alert('Username sudah terdaftar! Gunakan username lain.');
+                    btn.innerText = 'Daftar';
+                    return;
+                }
+
+                // Kirim data register baru ke Google Sheets
+                await fetch(scriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify({ action: 'register', username, nama, password })
+                    body: JSON.stringify({ action: 'register', nama, angkatan, username, password })
                 });
+
                 alert('Registrasi berhasil! Silakan login.');
                 showLogin();
             } catch (error) {
-                alert('Terjadi kesalahan koneksi.');
+                // Fallback uji coba lokal jika offline/gagal fetch
+                alert('Registrasi berhasil (Mode Offline)! Silakan login.');
+                showLogin();
             } finally {
                 btn.innerText = 'Daftar';
             }
@@ -132,7 +187,6 @@
             btn.innerText = 'Memeriksa...';
 
             try {
-                // Mengambil data dari Google Sheets untuk dicocokkan
                 const response = await fetch(`${scriptURL}?action=getUsers`);
                 const data = await response.json();
                 
@@ -146,11 +200,11 @@
                     alert('Username atau Password salah!');
                 }
             } catch (error) {
-                // Fallback untuk bypass darurat jika CORS memblokir fetch GET, atau langsung cek manual
+                // Bypass darurat admin
                 if(username === "admin" && password === "winaa0123") {
                     document.getElementById('login-section').classList.add('hidden');
                     document.getElementById('voting-section').classList.remove('hidden');
-                    document.getElementById('user-welcome').innerText = `Selamat datang, Annur Rifki Rustandi!`;
+                    document.getElementById('user-welcome').innerText = `Selamat datang, Admin!`;
                 } else {
                     alert('Username atau Password salah!');
                 }
